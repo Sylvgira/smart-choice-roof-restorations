@@ -30,11 +30,11 @@ const fallbackIcons = [
 { variant === 'icon-grid' ? (
   <div class="service-grid service-grid--icon-grid" data-theme="dark">
     {services.map((service, i) => (
-      <div class="service-icon-card">
+      <a class="service-icon-card" href="#contact">
         <span class="service-icon-card__icon" set:html={fallbackIcons[i % fallbackIcons.length]} />
         <h3>{service.data.title}</h3>
         <p>{service.data.summary}</p>
-      </div>
+      </a>
     ))}
   </div>
 ) : (
@@ -101,6 +101,7 @@ const fallbackIcons = [
     gap: 0;
     border-radius: var(--radius-md);
     overflow: hidden;
+    background: var(--color-page);
   }
 
   .service-icon-card {
@@ -113,6 +114,7 @@ const fallbackIcons = [
     text-decoration: none;
     color: inherit;
     transition: background 0.2s;
+    cursor: pointer;
   }
 
   .service-icon-card:hover {
