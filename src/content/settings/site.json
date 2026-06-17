@@ -1,0 +1,21 @@
+{
+  "name": "Smart Choice Roof Restorations",
+  "description": "Melbourne's trusted roof restoration specialists. Tile roof restoration, metal roof restoration, repairs, repainting and more. Do it once, do it Smart!",
+  "url": "https://sylvgira.github.io",
+  "email": "info@smartchoiceroofing.com.au",
+  "phone": "0485 815 294",
+  "address": "Thomastown VIC 3074",
+  "abn": "81 274 209 294",
+  "ctaLabel": "Get a Free Quote",
+  "ctaUrl": "#contact",
+  "socialLinks": [
+    {
+      "label": "Facebook",
+      "url": "https://www.facebook.com/smartchoiceroofrestorations/"
+    },
+    {
+      "label": "Instagram",
+      "url": "https://www.instagram.com/smartchoiceroofrestorations/"
+    }
+  ]
+}

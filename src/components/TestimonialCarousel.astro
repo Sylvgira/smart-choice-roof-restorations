@@ -1,0 +1,176 @@
+---
+interface Testimonial {
+  data: {
+    quote: string;
+    name: string;
+    role?: string;
+  };
+}
+
+interface Props {
+  testimonials: Testimonial[];
+}
+
+const { testimonials } = Astro.props;
+---
+
+<div class="testimonial-carousel" data-carousel>
+  <div class="testimonial-carousel__track" data-carousel-track>
+    {testimonials.map((item, i) => (
+      <figure class="testimonial-carousel__slide" data-carousel-slide aria-hidden={i !== 0 ? 'true' : 'false'}>
+        <div class="testimonial-carousel__stars" aria-label="5 out of 5 stars">★★★★★</div>
+        <blockquote>{item.data.quote}</blockquote>
+        <figcaption>
+          <strong>{item.data.name}</strong>
+          {item.data.role && <span>{item.data.role}</span>}
+        </figcaption>
+      </figure>
+    ))}
+  </div>
+  <div class="testimonial-carousel__dots">
+    {testimonials.map((_, i) => (
+      <button
+        class="testimonial-carousel__dot"
+        data-carousel-dot
+        data-index={i}
+        aria-label={`Go to testimonial ${i + 1}`}
+      ></button>
+    ))}
+  </div>
+</div>
+
+<script>
+  function initCarousel() {
+    const carousel = document.querySelector('[data-carousel]');
+    if (!carousel) return;
+
+    const slides = carousel.querySelectorAll('[data-carousel-slide]');
+    const dots = carousel.querySelectorAll('[data-carousel-dot]');
+    if (slides.length === 0) return;
+
+    let current = 0;
+    let interval: ReturnType<typeof setInterval>;
+
+    const showSlide = (index: number) => {
+      slides.forEach((slide, i) => {
+        (slide as HTMLElement).style.display = i === index ? '' : 'none';
+        slide.setAttribute('aria-hidden', i === index ? 'false' : 'true');
+      });
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+      });
+      current = index;
+    };
+
+    const next = () => {
+      showSlide((current + 1) % slides.length);
+    };
+
+    // Initial state
+    showSlide(0);
+
+    // Auto-cycle every 5 seconds
+    interval = setInterval(next, 5000);
+
+    // Dot clicks
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const idx = parseInt(dot.getAttribute('data-index') || '0');
+        showSlide(idx);
+        // Reset auto-cycle
+        clearInterval(interval);
+        interval = setInterval(next, 5000);
+      });
+    });
+
+    // Pause on hover
+    carousel.addEventListener('mouseenter', () => clearInterval(interval));
+    carousel.addEventListener('mouseleave', () => {
+      interval = setInterval(next, 5000);
+    });
+  }
+
+  initCarousel();
+  document.addEventListener('astro:page-load', initCarousel);
+</script>
+
+<style>
+  .testimonial-carousel {
+    max-width: var(--container-narrow);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .testimonial-carousel__track {
+    position: relative;
+    min-height: 14rem;
+  }
+
+  .testimonial-carousel__slide {
+    margin: 0;
+    padding: var(--space-6) var(--space-5);
+    border-left: none;
+    background: var(--color-page);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-md);
+    text-align: center;
+  }
+
+  .testimonial-carousel__stars {
+    color: #F5A623;
+    font-size: var(--text-lg);
+    letter-spacing: 0.15em;
+    margin-bottom: var(--space-4);
+  }
+
+  .testimonial-carousel__slide blockquote {
+    margin: 0 0 var(--space-5);
+    color: var(--color-text);
+    font-size: var(--text-md);
+    line-height: 1.65;
+    font-style: italic;
+  }
+
+  .testimonial-carousel__slide figcaption {
+    display: grid;
+    gap: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .testimonial-carousel__slide figcaption strong {
+    color: var(--color-text);
+  }
+
+  .testimonial-carousel__dots {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+  }
+
+  .testimonial-carousel__dot {
+    width: 10px;
+    height: 10px;
+    border: none;
+    border-radius: 50%;
+    background: var(--color-rule);
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s;
+  }
+
+  .testimonial-carousel__dot.active {
+    background: var(--brand-primary);
+  }
+
+  @media (max-width: 720px) {
+    .testimonial-carousel__track {
+      min-height: 18rem;
+    }
+
+    .testimonial-carousel__slide blockquote {
+      font-size: 1rem;
+    }
+  }
+</style>

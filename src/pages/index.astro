@@ -1,0 +1,141 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Hero from '@components/Hero.astro';
+import TrustBar from '@components/TrustBar.astro';
+import Section from '@components/Section.astro';
+import ServiceGrid from '@components/ServiceGrid.astro';
+import BeforeAfterSlider from '@components/BeforeAfterSlider.astro';
+import TestimonialCarousel from '@components/TestimonialCarousel.astro';
+import ServiceAreaTags from '@components/ServiceAreaTags.astro';
+import FAQList from '@components/FAQList.astro';
+import CTABand from '@components/CTABand.astro';
+import StatsBar from '@components/StatsBar.astro';
+import { byOrder } from '../lib/content';
+
+const site = await getEntry('settings', 'site');
+const home = await getEntry('pages', 'home');
+const services = byOrder(await getCollection('services'));
+const testimonials = byOrder(await getCollection('testimonials'));
+const faqs = byOrder(await getCollection('faqs'));
+
+const hero = home?.data.hero;
+const siteData = site?.data;
+---
+
+<BaseLayout>
+  <!-- Hero -->
+  <Hero
+    variant="image-full"
+    eyebrow={hero?.eyebrow ?? "Melbourne's Trusted Roof Restoration Specialists"}
+    title={hero?.title ?? "Roof Restoration Melbourne"}
+    intro={hero?.intro ?? "Do it once, do it Smart! Premium roof restoration, repairs, and repainting across Melbourne."}
+    primaryLabel={hero?.primaryLabel ?? 'Get a Free Quote'}
+    primaryUrl={hero?.primaryUrl ?? '#contact'}
+    secondaryLabel={hero?.secondaryLabel ?? 'Our Services'}
+    secondaryUrl={hero?.secondaryUrl ?? '#services'}
+    imageUrl={hero?.imageUrl ?? '/smart-choice-roof-restorations/uploads/5after.jpg'}
+  />
+
+  <!-- Trust Bar -->
+  <TrustBar
+    title="Trusted by Melbourne Homeowners"
+    items={[
+      { label: '5.0 ★ Google Rating (43+ Reviews)' },
+      { label: 'ABN Licensed & Fully Insured' },
+      { label: '10+ Years Experience' },
+      { label: '100% Satisfaction Guarantee' },
+      { label: 'Free, No-Obligation Quotes' }
+    ]}
+    ctaLabel="Get a Free Quote"
+    ctaUrl="#contact"
+  />
+
+  <!-- Stats Bar (surface section) -->
+  <Section theme="surface" eyebrow="By the numbers" title="The Smart Choice difference">
+    <StatsBar
+      items={[
+        { value: '1,500+', label: 'Roofs Restored' },
+        { value: '5.0 ★', label: 'Google Rating' },
+        { value: '15-20', label: 'Years of Life Added' },
+        { value: '100%', label: 'Satisfaction Guarantee' }
+      ]}
+    />
+  </Section>
+
+  <!-- Services -->
+  <Section id="services" eyebrow="What we do" title="Our Roof Restoration Services">
+    <ServiceGrid services={services} variant="icon-grid" />
+  </Section>
+
+  <!-- Before/After Gallery -->
+  <Section
+    id="gallery"
+    theme="surface"
+    eyebrow="Our work"
+    title="Before & After"
+    intro="See the Smart Choice difference — real results from real Melbourne homes."
+  >
+    <BeforeAfterSlider />
+  </Section>
+
+  <!-- Testimonials -->
+  <Section
+    id="testimonials"
+    eyebrow="What our clients say"
+    title="Trusted by Homeowners Across Melbourne"
+  >
+    <TestimonialCarousel testimonials={testimonials} />
+  </Section>
+
+  <!-- Service Area -->
+  <Section theme="surface" eyebrow="Service area" title="Proudly Serving Melbourne">
+    <ServiceAreaTags />
+  </Section>
+
+  <!-- FAQ -->
+  <Section id="faq" eyebrow="Got questions?" title="Frequently Asked Questions">
+    <FAQList faqs={faqs} />
+  </Section>
+
+  <!-- CTA -->
+  <div data-theme="primary" id="contact">
+    <CTABand
+      title="Ready to restore your roof?"
+      text={`Call ${siteData?.phone ?? '0485 815 294'} for a free quote or send us a message. We'll assess your roof and provide honest, professional advice — no obligation, no pressure.`}
+      label="Get a Free Quote"
+      href={`tel:${siteData?.phone?.replace(/\s/g, '') ?? '0485815294'}`}
+      variant="band"
+    />
+  </div>
+</BaseLayout>
+
+<style is:global>
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  }
+
+  .reveal--visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal--visible');
+          observer.unobserve(entry.target);
+        }
+      }
+    },
+    { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+  );
+
+  document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+</script>

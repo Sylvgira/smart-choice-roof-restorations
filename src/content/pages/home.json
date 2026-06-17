@@ -1,0 +1,17 @@
+{
+  "hero": {
+    "variant": "image-full",
+    "eyebrow": "Melbourne's Trusted Roof Restoration Specialists",
+    "title": "Roof Restoration Melbourne",
+    "intro": "Do it once, do it Smart! Smart Choice Roof Restorations delivers premium roof restoration, repairs, and repainting across Melbourne. 5.0 ★ rated — 43+ reviews.",
+    "primaryLabel": "Get a Free Quote",
+    "primaryUrl": "#contact",
+    "secondaryLabel": "Our Services",
+    "secondaryUrl": "#services",
+    "imageUrl": "/smart-choice-roof-restorations/uploads/5after.jpg"
+  },
+  "servicesVariant": "icon-grid",
+  "testimonialsVariant": "carousel",
+  "galleryVariant": "before-after",
+  "ctaVariant": "band"
+}

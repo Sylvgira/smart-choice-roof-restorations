@@ -1,0 +1,290 @@
+---
+interface BeforeAfterPair {
+  beforeImg: string;
+  afterImg: string;
+  label?: string;
+}
+
+interface Props {
+  pairs?: BeforeAfterPair[];
+}
+
+const defaultPairs: BeforeAfterPair[] = [
+  {
+    beforeImg: '/smart-choice-roof-restorations/uploads/1before.jpg',
+    afterImg: '/smart-choice-roof-restorations/uploads/1after.jpg',
+    label: 'Tile Roof Restoration'
+  },
+  {
+    beforeImg: '/smart-choice-roof-restorations/uploads/4before.jpg',
+    afterImg: '/smart-choice-roof-restorations/uploads/4after.jpg',
+    label: 'Metal Roof Respray'
+  },
+  {
+    beforeImg: '/smart-choice-roof-restorations/uploads/5before.jpg',
+    afterImg: '/smart-choice-roof-restorations/uploads/5after.jpg',
+    label: 'Complete Roof Restoration'
+  }
+];
+
+const { pairs = defaultPairs } = Astro.props;
+---
+
+<div class="ba-gallery">
+  {pairs.map((pair, idx) => (
+    <div class="ba-card">
+      <div class="ba-slider" data-ba-slider>
+        <div class="ba-image ba-image--after">
+          <img src={pair.afterImg} alt={`After — ${pair.label || ''}`} loading={idx === 0 ? 'eager' : 'lazy'} />
+        </div>
+        <div class="ba-image ba-image--before" data-ba-before>
+          <img src={pair.beforeImg} alt={`Before — ${pair.label || ''}`} loading={idx === 0 ? 'eager' : 'lazy'} />
+        </div>
+        <div class="ba-handle" data-ba-handle aria-label="Drag to compare before and after" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+          <div class="ba-handle__line"></div>
+          <div class="ba-handle__grip">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </div>
+          <div class="ba-handle__line"></div>
+        </div>
+      </div>
+      {pair.label && <p class="ba-label">{pair.label}</p>}
+    </div>
+  ))}
+</div>
+
+<script>
+  function initBeforeAfterSliders() {
+    const sliders = document.querySelectorAll('[data-ba-slider]');
+
+    sliders.forEach((slider) => {
+      const before = slider.querySelector('[data-ba-before]');
+      const handle = slider.querySelector('[data-ba-handle]');
+      if (!before || !handle) return;
+
+      let active = false;
+
+      const setPosition = (clientX: number) => {
+        const rect = slider.getBoundingClientRect();
+        let pct = ((clientX - rect.left) / rect.width) * 100;
+        pct = Math.max(0, Math.min(100, pct));
+        before.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+        handle.style.left = `${pct}%`;
+        handle.setAttribute('aria-valuenow', String(Math.round(pct)));
+      };
+
+      // Set initial position at 50%
+      setPosition(slider.getBoundingClientRect().left + slider.getBoundingClientRect().width / 2);
+
+      const onStart = (e: MouseEvent | TouchEvent) => {
+        e.preventDefault();
+        active = true;
+        slider.style.cursor = 'ew-resize';
+      };
+
+      const onMove = (e: MouseEvent | TouchEvent) => {
+        if (!active) return;
+        const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+        setPosition(clientX);
+      };
+
+      const onEnd = () => {
+        active = false;
+        slider.style.cursor = '';
+      };
+
+      // Mouse events
+      handle.addEventListener('mousedown', onStart);
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onEnd);
+
+      // Touch events
+      handle.addEventListener('touchstart', onStart, { passive: false });
+      window.addEventListener('touchmove', onMove, { passive: false });
+      window.addEventListener('touchend', onEnd);
+
+      // Keyboard controls
+      handle.addEventListener('keydown', (e) => {
+        const current = parseFloat(handle.getAttribute('aria-valuenow') || '50');
+        let next = current;
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') next = Math.max(0, current - 2);
+        if (e.key === 'ArrowRight' || e.key === 'ArrowUp') next = Math.min(100, current + 2);
+        if (next !== current) {
+          e.preventDefault();
+          const rect = slider.getBoundingClientRect();
+          const clientX = rect.left + (next / 100) * rect.width;
+          setPosition(clientX);
+        }
+      });
+
+      // Click on slider to jump
+      slider.addEventListener('click', (e) => {
+        if (e.target === handle || handle.contains(e.target as Node)) return;
+        setPosition(e.clientX);
+      });
+
+      // Resize handler to keep position
+      window.addEventListener('resize', () => {
+        const pct = parseFloat(handle.getAttribute('aria-valuenow') || '50');
+        const rect = slider.getBoundingClientRect();
+        const clientX = rect.left + (pct / 100) * rect.width;
+        setPosition(clientX);
+      });
+    });
+  }
+
+  initBeforeAfterSliders();
+  document.addEventListener('astro:page-load', initBeforeAfterSliders);
+</script>
+
+<style>
+  .ba-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+
+  .ba-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .ba-slider {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    user-select: none;
+    -webkit-user-select: none;
+    background: var(--color-section);
+    cursor: default;
+  }
+
+  .ba-image {
+    position: absolute;
+    inset: 0;
+  }
+
+  .ba-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ba-image--before {
+    clip-path: inset(0 50% 0 0);
+    z-index: 2;
+  }
+
+  .ba-image--after {
+    z-index: 1;
+  }
+
+  /* Label overlay on the before side */
+  .ba-image--before::after {
+    content: 'BEFORE';
+    position: absolute;
+    top: var(--space-3);
+    left: var(--space-3);
+    padding: var(--space-1) var(--space-3);
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    border-radius: var(--radius-xs);
+    pointer-events: none;
+  }
+
+  .ba-image--after::after {
+    content: 'AFTER';
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    padding: var(--space-1) var(--space-3);
+    background: var(--brand-primary);
+    color: #fff;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    border-radius: var(--radius-xs);
+    pointer-events: none;
+  }
+
+  /* Handle */
+  .ba-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: ew-resize;
+    touch-action: none;
+    width: 36px;
+  }
+
+  .ba-handle__line {
+    flex: 1;
+    width: 2px;
+    background: #ffffff;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .ba-handle__grip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #1A2A3A;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    flex-shrink: 0;
+    transition: transform 0.15s ease;
+  }
+
+  .ba-handle:hover .ba-handle__grip,
+  .ba-handle:focus-visible .ba-handle__grip {
+    transform: scale(1.1);
+  }
+
+  .ba-handle:focus-visible {
+    outline: none;
+  }
+
+  .ba-handle:focus-visible .ba-handle__grip {
+    box-shadow: var(--focus-ring), 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+
+  .ba-label {
+    margin: 0;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    text-align: center;
+    color: var(--color-heading);
+  }
+
+  @media (max-width: 860px) {
+    .ba-gallery {
+      grid-template-columns: 1fr;
+      max-width: 540px;
+      margin-inline: auto;
+    }
+
+    .ba-slider {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

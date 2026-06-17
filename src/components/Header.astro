@@ -1,0 +1,128 @@
+---
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  site: {
+    name: string;
+    ctaLabel?: string;
+    ctaUrl?: string;
+    logoUrl?: string;
+  };
+  pathname: string;
+}
+
+const { site, pathname } = Astro.props;
+const logoUrl = '/smart-choice-roof-restorations/uploads/logo.png';
+const nav: NavItem[] = [
+  { label: 'Services', href: '#services' },
+  { label: 'Gallery', href: '#gallery' },
+  { label: 'Reviews', href: '#testimonials' },
+  { label: 'FAQ', href: '#faq' },
+  { label: 'Contact', href: '#contact' }
+];
+
+const isCurrent = (href: string) => pathname === href || pathname.startsWith(href);
+---
+
+<header class="site-header">
+  <div class="site-header__inner container">
+    <a class="site-header__brand" href="/smart-choice-roof-restorations/" aria-label={`${site.name} home`}>
+      <img src={logoUrl} alt={site.name} width="180" height="42" />
+    </a>
+    <nav class="site-header__nav" aria-label="Primary navigation">
+      {nav.map((item) => (
+        <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+    <a class="site-header__cta button" href={site.ctaUrl ?? '#contact'}>
+      {site.ctaLabel ?? 'Get a Free Quote'}
+    </a>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--color-rule);
+    background: var(--color-page);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .site-header__inner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-5);
+    align-items: center;
+    min-height: 4.75rem;
+  }
+
+  .site-header__brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .site-header__brand img {
+    height: 42px;
+    width: auto;
+    display: block;
+  }
+
+  .site-header__nav {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .site-header__nav a {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: 650;
+    text-decoration: none;
+  }
+
+  .site-header__nav a:hover,
+  .site-header__nav a[aria-current='page'] {
+    color: var(--color-text);
+  }
+
+  .site-header__cta {
+    min-height: 2.5rem;
+    padding-inline: var(--space-4);
+    font-size: var(--text-sm);
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 760px) {
+    .site-header__inner {
+      grid-template-columns: 1fr auto;
+      gap: var(--space-3);
+      padding-block: var(--space-3);
+    }
+
+    .site-header__nav {
+      grid-column: 1 / -1;
+      order: 3;
+      justify-content: space-between;
+      overflow-x: auto;
+      padding-top: var(--space-2);
+      gap: var(--space-3);
+    }
+
+    .site-header__cta {
+      justify-self: end;
+    }
+
+    .site-header__brand img {
+      height: 32px;
+    }
+  }
+</style>
