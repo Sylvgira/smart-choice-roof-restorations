@@ -58,9 +58,10 @@ const defaultIcons = [
 
   .trust-bar__inner {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: var(--space-7);
-    flex-wrap: wrap;
+    gap: var(--space-5);
+    text-align: center;
   }
 
   .trust-bar__title {
@@ -77,6 +78,7 @@ const defaultIcons = [
   .trust-bar__items {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--space-5);
     flex: 1;
     flex-wrap: wrap;

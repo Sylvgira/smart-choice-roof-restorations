@@ -17,7 +17,7 @@ const {
   narrow = false
 } = Astro.props;
 
-const dataTheme = theme !== 'default' ? theme : undefined;
+const dataTheme = theme === 'dark' || theme === 'primary' ? theme : undefined;
 ---
 
 <section
