@@ -98,9 +98,7 @@ const fallbackIcons = [
   .service-grid--icon-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0;
-    border-radius: var(--radius-md);
-    overflow: hidden;
+    gap: var(--space-3);
     background: var(--color-page);
     color: var(--color-text);
   }
@@ -110,25 +108,18 @@ const fallbackIcons = [
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-4);
-    padding: var(--space-7) var(--space-5);
+    gap: var(--space-3);
+    padding: var(--space-6) var(--space-5);
     text-decoration: none;
     color: inherit;
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--color-page), #ffffff 6%);
     transition: background 0.2s;
     cursor: pointer;
   }
 
   .service-icon-card:hover {
-    background: var(--color-section);
-  }
-
-  .service-icon-card:nth-child(3n+2),
-  .service-icon-card:nth-child(3n+3) {
-    border-left: 1px solid var(--color-rule);
-  }
-
-  .service-icon-card:nth-child(n+4) {
-    border-top: 1px solid var(--color-rule);
+    background: color-mix(in srgb, var(--color-page), #ffffff 12%);
   }
 
   .service-icon-card__icon {
@@ -174,28 +165,11 @@ const fallbackIcons = [
     .service-grid--icon-grid {
       grid-template-columns: 1fr 1fr;
     }
-
-    .service-icon-card:nth-child(odd) {
-      border-left: none;
-    }
-
-    .service-icon-card:nth-child(3) {
-      border-top: 1px solid var(--color-rule);
-    }
   }
 
   @media (max-width: 540px) {
     .service-grid--icon-grid {
       grid-template-columns: 1fr;
-    }
-
-    .service-icon-card {
-      border-left: none !important;
-      border-top: 1px solid var(--color-rule);
-    }
-
-    .service-icon-card:first-child {
-      border-top: none;
     }
   }
 </style>
